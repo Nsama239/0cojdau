@@ -217,16 +217,6 @@ local function applyHideAsync()
             count += 1
             if count % 500 == 0 then task.wait() end
         end
-        if getnilinstances then
-            for _, v in ipairs(getnilinstances()) do
-                pcall(setHidden, v)
-                for _, child in ipairs(v:GetDescendants()) do
-                    pcall(setHidden, child)
-                    count += 1
-                    if count % 500 == 0 then task.wait() end
-                end
-            end
-        end
     end)
     if hideConn then hideConn:Disconnect() end
     hideConn = workspace.DescendantAdded:Connect(function(v)
