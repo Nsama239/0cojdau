@@ -189,8 +189,7 @@ hideBtn.TextSize = 14
 hideBtn.Text = "Hide Map: OFF"
 hideBtn.Parent = panel
 
-local origT = setmetatable({}, {__mode = "k"})      -- transparency/localtransparency
-local origEnabled = setmetatable({}, {__mode = "k"})-- enabled state for effects/gui
+local origT = setmetatable({}, {__mode = "k"})
 local hideOn = false
 local hideConn
 
@@ -201,22 +200,9 @@ end
 local function setHidden(inst)
     if isRenderable(inst) then
         if origT[inst] == nil then
-            origT[inst] = {inst.Transparency, inst.LocalTransparencyModifier or 0}
+            origT[inst] = inst.Transparency
         end
         inst.Transparency = 1
-        if inst.LocalTransparencyModifier ~= nil then
-            inst.LocalTransparencyModifier = 1
-        end
-    elseif inst:IsA("BillboardGui") or inst:IsA("SurfaceGui")
-        or inst:IsA("ParticleEmitter") or inst:IsA("Trail")
-        or inst:IsA("Beam") or inst:IsA("Fire")
-        or inst:IsA("Smoke") or inst:IsA("Sparkles") then
-        if origEnabled[inst] == nil and inst.Enabled ~= nil then
-            origEnabled[inst] = inst.Enabled
-        end
-        if inst.Enabled ~= nil then
-            inst.Enabled = false
-        end
     end
 end
 
@@ -250,21 +236,7 @@ local function revertHideAsync()
         local count = 0
         for inst, old in pairs(origT) do
             pcall(function()
-                if inst then
-                    inst.Transparency = old[1]
-                    if inst.LocalTransparencyModifier ~= nil then
-                        inst.LocalTransparencyModifier = old[2] or 0
-                    end
-                end
-            end)
-            count += 1
-            if count % 500 == 0 then task.wait() end
-        end
-        for inst, old in pairs(origEnabled) do
-            pcall(function()
-                if inst and inst.Enabled ~= nil then
-                    inst.Enabled = old
-                end
+                if inst then inst.Transparency = old end
             end)
             count += 1
             if count % 500 == 0 then task.wait() end
