@@ -5,7 +5,7 @@ local dConfig = {
     Hidemap = false,
     Norender= false,
     AutoRejoin = false,
-    EnableUi= true,
+    EnableUi= false,
 }
 
 local Config = (getgenv and getgenv().Config) or _G.Config
