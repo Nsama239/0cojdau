@@ -4,6 +4,7 @@ local dConfig = {
     Lowset  = false,
     Hidemap = false,
     Norender= false,
+    AutoRejoin = false,
     EnableUi= true,
 }
 
@@ -19,10 +20,13 @@ else
 end
 
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local Stats = game:GetService("Stats")
 local p = Players.LocalPlayer
+local isRejoining = false
 
 local function notify(title, text, duration)
     if StarterGui and StarterGui.SetCore then
@@ -295,4 +299,21 @@ end
 
 if Config.Lowset then
     applyLowset()
+end
+
+-- Auto-rejoin when error/kick prompt appears
+if Config.AutoRejoin then
+    local function onErrorMessageChanged(errorMessage)
+        if isRejoining then return end
+        if errorMessage and errorMessage ~= "" then
+            isRejoining = true
+            print("Error detected: " .. errorMessage)
+            if p then
+                task.wait()
+                TeleportService:Teleport(game.PlaceId, p)
+            end
+        end
+    end
+
+    GuiService.ErrorMessageChanged:Connect(onErrorMessageChanged)
 end
