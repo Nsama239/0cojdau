@@ -1,24 +1,3 @@
--- Lite performance helper focused on lower CPU/GPU work
-local dConfig = {
-    Fpscap  = 60,   -- set lower default fps to reduce render load
-    Lowset  = false,
-    Hidemap = false,
-    Norender= false,
-    AutoRejoin = false,
-    EnableUi= true,
-}
-
-local Config = (getgenv and getgenv().Config) or _G.Config
-if Config then
-    for k, v in pairs(dConfig) do
-        if Config[k] == nil then
-            Config[k] = v
-        end
-    end
-else
-    Config = dConfig
-end
-
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local GuiService = game:GetService("GuiService")
@@ -327,3 +306,5 @@ if Config.AutoRejoin then
 
     GuiService.ErrorMessageChanged:Connect(onErrorMessageChanged)
 end
+
+
