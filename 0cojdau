@@ -5,7 +5,7 @@ local dConfig = {
     Hidemap = false,
     Norender= false,
     AutoRejoin = false,
-    EnableUi= false,
+    EnableUi= true,
 }
 
 local Config = (getgenv and getgenv().Config) or _G.Config
@@ -38,12 +38,22 @@ local function notify(title, text, duration)
     end
 end
 
-local function applyFpsCap(n)
-    if setfpscap and n and n > 0 then
-        setfpscap(n)
-    end
+-- Duy trì setfpscap liên tục để tránh bị reset bởi resize/focus
+local capTarget = Config.Fpscap or 0
+local capLoopRunning = false
+local function startCapLoop()
+    if capLoopRunning then return end
+    capLoopRunning = true
+    task.spawn(function()
+        while true do
+            if setfpscap and capTarget and capTarget > 0 then
+                setfpscap(capTarget)
+            end
+            task.wait()
+        end
+    end)
 end
-applyFpsCap(Config.Fpscap)
+startCapLoop()
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "LitePerfUI"
@@ -143,7 +153,7 @@ local function setFpsFromBox()
     local n = tonumber(fpsBox.Text)
     if n and n > 0 then
         Config.Fpscap = n
-        applyFpsCap(n)
+        capTarget = n
         notify("FPS Cap", "Set to " .. n)
     else
         fpsBox.Text = tostring(Config.Fpscap)
